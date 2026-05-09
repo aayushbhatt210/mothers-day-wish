@@ -1,0 +1,32 @@
+{
+  "title": "Memories in Bloom",
+  "subtitle": "A small album filled with love, gratitude, and the moments that made us.",
+  "pages": [
+    { "pageNumber": 1, "photos": ["photo1.jpeg"], "layout": "fullMedia" },
+    { "pageNumber": 2, "photos": ["photo2.jpeg"], "layout": "fullMedia" },
+    { "pageNumber": 3, "photos": ["photo3.jpeg"], "layout": "fullMedia" },
+    { "pageNumber": 4, "photos": ["photo4.jpeg"], "layout": "fullMedia" },
+    { "pageNumber": 5, "photos": ["photo5.jpeg"], "layout": "fullMedia" },
+    { "pageNumber": 6, "photos": ["photo6.jpeg"], "layout": "fullMedia" },
+    { "pageNumber": 7, "photos": ["photo7.jpeg"], "layout": "fullMedia" },
+    { "pageNumber": 8, "photos": ["photo8.jpeg"], "layout": "fullMedia" },
+    { "pageNumber": 9, "photos": ["photo9.jpeg"], "layout": "fullMedia" },
+    { "pageNumber": 10, "photos": ["photo10.jpeg"], "layout": "fullMedia" },
+    { "pageNumber": 11, "photos": ["photo11.jpeg"], "layout": "fullMedia" },
+    { "pageNumber": 12, "photos": ["photo12.jpeg"], "layout": "fullMedia" },
+    { "pageNumber": 13, "photos": ["photo13.jpeg"], "layout": "fullMedia" },
+    { "pageNumber": 14, "photos": ["photo14.jpeg"], "layout": "fullMedia" },
+    { "pageNumber": 15, "photos": ["photo15.jpeg"], "layout": "fullMedia" },
+    { "pageNumber": 16, "photos": ["photo16.jpeg"], "layout": "fullMedia" },
+    { "pageNumber": 17, "photos": ["photo17.jpeg"], "layout": "fullMedia" },
+    { "pageNumber": 18, "photos": ["photo18.jpeg"], "layout": "fullMedia" },
+    { "pageNumber": 19, "photos": ["photo19.jpeg"], "layout": "fullMedia" },
+    {
+      "pageNumber": 20,
+      "photos": [],
+      "layout": "fullMedia",
+      "mediaType": "video",
+      "video": "video1.mp4"
+    }
+  ]
+}
