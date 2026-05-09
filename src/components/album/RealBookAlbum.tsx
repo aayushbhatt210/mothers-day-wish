@@ -220,10 +220,13 @@ export function RealBookAlbum({ data, onReachedEnd, onPageTurn }: RealBookAlbumP
                   style={{ 
                     backfaceVisibility: "hidden", 
                     transform: "rotateY(180deg)",
-                    zIndex: 1
+                    zIndex: 1,
+                    backgroundColor: "#fffaf8"
                   }}
                 >
-                  {renderSide(spreads[activeSpreadIndex + (flipDirection === "next" ? 1 : -1)][flipDirection === "next" ? "left" : "right"], flipDirection === "next" ? "left" : "right")}
+                  <div style={{ transform: "rotateY(180deg)", width: "100%", height: "100%" }}>
+                    {renderSide(spreads[activeSpreadIndex + (flipDirection === "next" ? 1 : -1)][flipDirection === "next" ? "left" : "right"], flipDirection === "next" ? "left" : "right")}
+                  </div>
                   <motion.div 
                     className="absolute inset-0 bg-black/5"
                     initial={{ opacity: 0.3 }}
