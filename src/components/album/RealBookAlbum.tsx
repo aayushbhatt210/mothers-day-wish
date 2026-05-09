@@ -91,11 +91,11 @@ export function RealBookAlbum({ data, onReachedEnd, onPageTurn }: RealBookAlbumP
             ref={flipRef}
             className="mx-auto"
             startPage={0}
-            flippingTime={800}
+            flippingTime={400}
             useMouseEvents={true}
             disableFlipByClick={false}
             showPageCorners={true}
-            drawShadow={true}
+            drawShadow={false}
             onFlip={(event: any) => {
               const nextPage = event.data;
               setActivePage(nextPage);
