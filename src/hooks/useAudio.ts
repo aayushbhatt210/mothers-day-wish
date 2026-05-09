@@ -22,18 +22,25 @@ export function useAudio() {
   const initializedRef = useRef(false);
 
   const background = useMemo(
-    () =>
-      new Howl({
+    () => {
+      console.log("Audio: Initializing background music Howl...");
+      return new Howl({
         src: ["/assets/audio/background.mp3"],
         loop: true,
         volume: 0.35,
-        html5: true,
-        onloaderror: (id, error) => console.error("Audio Load Error:", error),
+        html5: false, // Use Web Audio for better autoplay handling
+        onload: () => console.log("Audio: Background music LOADED successfully"),
+        onloaderror: (id, error) => console.error("Audio: Background music LOAD ERROR:", error),
+        onplay: () => console.log("Audio: Background music started PLAYING"),
         onplayerror: (id, error) => {
-          console.warn("Audio Play Blocked. Waiting for interaction...");
-          background.once("unlock", () => background.play());
+          console.warn("Audio: Play BLOCKED by browser. Error:", error);
+          background.once("unlock", () => {
+            console.log("Audio: Howler UNLOCKED, playing now...");
+            background.play();
+          });
         }
-      }),
+      });
+    },
     []
   );
 
@@ -80,10 +87,22 @@ export function useAudio() {
   }, [background, effects, voiceNotes]);
 
   const startBackground = useCallback(() => {
-    if (!initializedRef.current || !background.playing()) {
+    const state = background.state();
+    const isPlaying = background.playing();
+    
+    console.log(`Audio: startBackground called. State: ${state}, Playing: ${isPlaying}`);
+
+    if (state === "loaded" && !isPlaying) {
       background.play();
-      initializedRef.current = true;
+    } else if (state === "unloaded") {
+      background.load();
+      background.once("load", () => background.play());
+    } else if (!isPlaying) {
+      // If it's loading or already trying to play, just trigger play again to be safe
+      background.play();
     }
+    
+    initializedRef.current = true;
   }, [background]);
 
   const stopBackground = useCallback(() => {

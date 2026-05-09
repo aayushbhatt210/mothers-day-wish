@@ -14,11 +14,13 @@ function App() {
   const audio = useAudio();
 
   useEffect(() => {
+    console.log("App: Landing page mounted, attempting audio start...");
     // Try to start immediately (may be blocked by browser)
     audio.startBackground();
 
     // Start on first interaction to bypass browser autoplay restrictions
     const handleInteraction = () => {
+      console.log("App: First interaction detected, starting audio...");
       audio.startBackground();
       window.removeEventListener("click", handleInteraction);
       window.removeEventListener("touchstart", handleInteraction);
