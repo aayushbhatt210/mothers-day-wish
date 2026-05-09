@@ -58,9 +58,17 @@ export function RealBookAlbum({ data, onReachedEnd, onPageTurn }: RealBookAlbumP
   const isCollapsed = isAtEnd || isAtStart;
 
   const progressLabel = `Page ${Math.max(1, activePage + 1)} of ${totalPhysicalPages}`;
+  const allPhotos = useMemo(() => data.pages.flatMap((p) => p.photos), [data]);
 
   return (
     <div className="flex flex-col items-center">
+      {/* Hidden pre-loader to ensure all photos are cached and ready for smooth flipping */}
+      <div className="fixed -z-50 h-0 w-0 overflow-hidden opacity-0" aria-hidden="true">
+        {allPhotos.map((src) => (
+          <img key={src} src={`/assets/photos/${src}`} alt="preload" />
+        ))}
+      </div>
+
       <div
         className={`book-shell relative mt-8 w-full max-w-[980px] overflow-visible rounded-2xl p-4 md:p-8 ${
           isCollapsed ? "book-collapsed" : "book-stack-effect"
