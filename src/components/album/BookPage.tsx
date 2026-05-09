@@ -16,30 +16,16 @@ function getLayout(layout: BookPageLayout | undefined, count: number) {
 }
 
 function Photo({ src, alt, className }: { src: string; alt: string; className: string }) {
-  const [rotated, setRotated] = useState(false);
-
   return (
     <div className="flex h-full w-full items-center justify-center overflow-hidden">
-      <div
-        className={`relative transition-all duration-500 ${
-          rotated ? "h-[70.4%] w-[142%] rotate-90" : "h-full w-full"
-        }`}
-      >
-        <img
-          src={`/assets/photos/${src}`}
-          alt={alt}
-          onLoad={(e) => {
-            const img = e.currentTarget;
-            if (img.naturalWidth > img.naturalHeight) {
-              setRotated(true);
-            }
-          }}
-          className={`${className} h-full w-full object-contain`}
-          onError={(event) => {
-            event.currentTarget.src = "https://placehold.co/800x600/FFF9F7/C85A7C?text=Add+Photo";
-          }}
-        />
-      </div>
+      <img
+        src={`/assets/photos/${src}`}
+        alt={alt}
+        className={`${className} h-full w-full object-contain`}
+        onError={(event) => {
+          event.currentTarget.src = "https://placehold.co/800x600/FFF9F7/C85A7C?text=Add+Photo";
+        }}
+      />
     </div>
   );
 }
