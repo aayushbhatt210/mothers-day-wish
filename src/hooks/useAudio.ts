@@ -21,7 +21,7 @@ export function useAudio() {
   const background = useMemo(
     () =>
       new Howl({
-        src: ["/assets/audio/backgroundMusic.mp3"],
+        src: ["/assets/audio/background.mp3"],
         loop: true,
         volume: 0.35,
         html5: true,
