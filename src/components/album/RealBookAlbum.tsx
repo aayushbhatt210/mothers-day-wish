@@ -15,11 +15,12 @@ type RealBookAlbumProps = {
 
 type SpreadSide = 
   | { type: "cover"; back: boolean; data?: undefined } 
-  | { type: "page"; data: PageData; back?: undefined };
+  | { type: "page"; data: PageData; back?: undefined }
+  | { type: "empty"; data?: undefined; back?: undefined };
 
 type Spread = {
   left: SpreadSide;
-  right: SpreadSide | null;
+  right: SpreadSide;
 };
 
 export function RealBookAlbum({ data, onReachedEnd, onPageTurn }: RealBookAlbumProps) {
@@ -30,31 +31,32 @@ export function RealBookAlbum({ data, onReachedEnd, onPageTurn }: RealBookAlbumP
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
   const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth);
 
-  // Map flat pages to spreads
+  // Map flat pages to spreads with a realistic book structure
   const spreads = useMemo<Spread[]>(() => {
     const s: Spread[] = [];
-    // Front Cover Spread
+    
+    // Spread 0: Closed book (Empty | Front Cover)
     s.push({
-      left: { type: "cover", back: false },
-      right: data.pages[0] ? { type: "page", data: data.pages[0] } : null
+      left: { type: "empty" },
+      right: { type: "cover", back: false }
     });
 
-    // Inner Pages
-    for (let i = 1; i < data.pages.length; i += 2) {
+    // Inner Pages: (Page 1 | Page 2), (Page 3 | Page 4), etc.
+    for (let i = 0; i < data.pages.length; i += 2) {
       s.push({
         left: { type: "page", data: data.pages[i] },
-        right: data.pages[i + 1] ? { type: "page", data: data.pages[i + 1] } : null
+        right: data.pages[i + 1] ? { type: "page", data: data.pages[i + 1] } : { type: "empty" }
       });
     }
 
-    // Back Cover Spread
-    const lastPage = s[s.length - 1];
-    if (lastPage && lastPage.right === null) {
-      lastPage.right = { type: "cover", back: true };
+    // Last Spread: (Back Cover | Empty) or (Last Page | Back Cover)
+    const lastSpread = s[s.length - 1];
+    if (lastSpread.right.type === "empty") {
+      lastSpread.right = { type: "cover", back: true };
     } else {
       s.push({
         left: { type: "cover", back: true },
-        right: null
+        right: { type: "empty" }
       });
     }
 
@@ -63,7 +65,7 @@ export function RealBookAlbum({ data, onReachedEnd, onPageTurn }: RealBookAlbumP
 
   // Displayed state for synchronization
   const [displayedLeft, setDisplayedLeft] = useState<SpreadSide>(spreads[0].left);
-  const [displayedRight, setDisplayedRight] = useState<SpreadSide | null>(spreads[0].right);
+  const [displayedRight, setDisplayedRight] = useState<SpreadSide>(spreads[0].right);
 
   const baseWidth = isMobile ? Math.min(viewportWidth - 36, 360) : 420;
   const baseHeight = Math.round(baseWidth * 1.42);
@@ -135,6 +137,16 @@ export function RealBookAlbum({ data, onReachedEnd, onPageTurn }: RealBookAlbumP
   const progressLabel = `Spread ${activeSpreadIndex + 1} of ${spreads.length}`;
   const allPhotos = useMemo(() => data.pages.flatMap((p) => p.photos), [data]);
 
+  const renderSide = (side: SpreadSide, sideName: "left" | "right") => {
+    if (side.type === "empty") {
+      return <div className="h-full w-full bg-cream/20" />;
+    }
+    if (side.type === "cover") {
+      return <BookCover title={data.title} subtitle={data.subtitle} back={!!side.back} />;
+    }
+    return <BookPage page={side.data} side={sideName} />;
+  };
+
   return (
     <div className="flex flex-col items-center">
       <div className="fixed -z-50 h-0 w-0 overflow-hidden opacity-0" aria-hidden="true">
@@ -149,39 +161,33 @@ export function RealBookAlbum({ data, onReachedEnd, onPageTurn }: RealBookAlbumP
           className="relative flex shadow-2xl"
           style={{ width: baseWidth * 2, height: baseHeight }}
         >
-          {/* Left Page (Stationary) */}
+          {/* Left Side Container */}
           <div 
-            className="relative overflow-hidden border-r border-black/5"
-            style={{ width: baseWidth, height: baseHeight, backgroundColor: "#fffaf8" }}
+            className={`relative overflow-hidden ${displayedLeft.type !== 'empty' ? 'border-r border-black/5' : ''}`}
+            style={{ width: baseWidth, height: baseHeight, backgroundColor: displayedLeft.type === 'empty' ? 'transparent' : '#fffaf8' }}
           >
-            {displayedLeft.type === "cover" ? (
-              <BookCover title={data.title} subtitle={data.subtitle} back={!!displayedLeft.back} />
-            ) : (
-              <BookPage page={displayedLeft.data} side="left" />
+            {renderSide(displayedLeft, "left")}
+            {displayedLeft.type !== 'empty' && (
+              <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-black/5 to-transparent" />
             )}
-            <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-black/5 to-transparent" />
           </div>
 
-          {/* Right Page (Stationary) */}
+          {/* Right Side Container */}
           <div 
-            className="relative overflow-hidden border-l border-black/5"
-            style={{ width: baseWidth, height: baseHeight, backgroundColor: "#fffaf8" }}
+            className={`relative overflow-hidden ${displayedRight.type !== 'empty' ? 'border-l border-black/5' : ''}`}
+            style={{ width: baseWidth, height: baseHeight, backgroundColor: displayedRight.type === 'empty' ? 'transparent' : '#fffaf8' }}
           >
-            {displayedRight ? (
-              displayedRight.type === "cover" ? (
-                <BookCover title={data.title} subtitle={data.subtitle} back={!!displayedRight.back} />
-              ) : (
-                <BookPage page={displayedRight.data} side="right" />
-              )
-            ) : null}
-            <div className="absolute inset-0 pointer-events-none bg-gradient-to-l from-black/5 to-transparent" />
+            {renderSide(displayedRight, "right")}
+            {displayedRight.type !== 'empty' && (
+              <div className="absolute inset-0 pointer-events-none bg-gradient-to-l from-black/5 to-transparent" />
+            )}
           </div>
 
           {/* Flipping Page Overlay */}
           <AnimatePresence>
             {isFlipping && (
               <motion.div
-                key={`flip-${activeSpreadIndex}`}
+                key={`flip-${activeSpreadIndex}-${flipDirection}`}
                 className="absolute top-0 z-50 origin-left overflow-visible"
                 style={{ 
                   left: baseWidth, 
@@ -194,16 +200,12 @@ export function RealBookAlbum({ data, onReachedEnd, onPageTurn }: RealBookAlbumP
                 exit={{ rotateY: flipDirection === "next" ? -180 : 0 }}
                 transition={{ duration: 0.5, ease: [0.645, 0.045, 0.355, 1.000] }}
               >
-                {/* Front Side of the flipping page (Original Right Content) */}
+                {/* Front Side of the flipping page */}
                 <div 
                   className="absolute inset-0 h-full w-full shadow-2xl"
                   style={{ backfaceVisibility: "hidden", zIndex: 2 }}
                 >
-                  {spreads[activeSpreadIndex]?.right?.type === "cover" ? (
-                    <BookCover title={data.title} subtitle={data.subtitle} back={!!spreads[activeSpreadIndex]?.right?.back} />
-                  ) : (
-                    <BookPage page={spreads[activeSpreadIndex]?.right?.data as PageData} side="right" />
-                  )}
+                  {renderSide(spreads[activeSpreadIndex][flipDirection === "next" ? "right" : "left"], flipDirection === "next" ? "right" : "left")}
                   <motion.div 
                     className="absolute inset-0 bg-black/10"
                     initial={{ opacity: 0 }}
@@ -212,7 +214,7 @@ export function RealBookAlbum({ data, onReachedEnd, onPageTurn }: RealBookAlbumP
                   />
                 </div>
 
-                {/* Back Side of the flipping page (New Left Content) */}
+                {/* Back Side of the flipping page */}
                 <div 
                   className="absolute inset-0 h-full w-full"
                   style={{ 
@@ -221,11 +223,7 @@ export function RealBookAlbum({ data, onReachedEnd, onPageTurn }: RealBookAlbumP
                     zIndex: 1
                   }}
                 >
-                  {spreads[activeSpreadIndex + (flipDirection === "next" ? 1 : -1)]?.left?.type === "cover" ? (
-                    <BookCover title={data.title} subtitle={data.subtitle} back={!!spreads[activeSpreadIndex + (flipDirection === "next" ? 1 : -1)]?.left?.back} />
-                  ) : (
-                    <BookPage page={spreads[activeSpreadIndex + (flipDirection === "next" ? 1 : -1)]?.left?.data as PageData} side="left" />
-                  )}
+                  {renderSide(spreads[activeSpreadIndex + (flipDirection === "next" ? 1 : -1)][flipDirection === "next" ? "left" : "right"], flipDirection === "next" ? "left" : "right")}
                   <motion.div 
                     className="absolute inset-0 bg-black/5"
                     initial={{ opacity: 0.3 }}
