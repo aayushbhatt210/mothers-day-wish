@@ -1,5 +1,5 @@
 import { Volume2, VolumeX } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LandingPage } from "@/components/LandingPage";
 import { InteractionZone } from "@/components/InteractionZone";
 import { Album } from "@/components/Album";
