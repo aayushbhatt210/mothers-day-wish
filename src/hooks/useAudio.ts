@@ -15,7 +15,10 @@ const effectFile: Record<EffectName, string> = {
 };
 
 export function useAudio() {
-  const [muted, setMuted] = useState(() => localStorage.getItem("mib-muted") === "true");
+  const [muted, setMuted] = useState(() => {
+    const saved = localStorage.getItem("mib-muted");
+    return saved === "true";
+  });
   const initializedRef = useRef(false);
 
   const background = useMemo(
@@ -25,6 +28,11 @@ export function useAudio() {
         loop: true,
         volume: 0.35,
         html5: true,
+        onloaderror: (id, error) => console.error("Audio Load Error:", error),
+        onplayerror: (id, error) => {
+          console.warn("Audio Play Blocked. Waiting for interaction...");
+          background.once("unlock", () => background.play());
+        }
       }),
     []
   );
@@ -72,12 +80,10 @@ export function useAudio() {
   }, [background, effects, voiceNotes]);
 
   const startBackground = useCallback(() => {
-    if (!initializedRef.current) {
+    if (!initializedRef.current || !background.playing()) {
       background.play();
       initializedRef.current = true;
-      return;
     }
-    if (!background.playing()) background.play();
   }, [background]);
 
   const stopBackground = useCallback(() => {

@@ -21,9 +21,14 @@ function App() {
     const handleInteraction = () => {
       audio.startBackground();
       window.removeEventListener("click", handleInteraction);
+      window.removeEventListener("touchstart", handleInteraction);
     };
     window.addEventListener("click", handleInteraction);
-    return () => window.removeEventListener("click", handleInteraction);
+    window.addEventListener("touchstart", handleInteraction);
+    return () => {
+      window.removeEventListener("click", handleInteraction);
+      window.removeEventListener("touchstart", handleInteraction);
+    };
   }, [audio]);
 
   const renderStep = () => {
