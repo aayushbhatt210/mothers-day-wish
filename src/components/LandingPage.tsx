@@ -37,7 +37,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
           aria-label="Open album and start celebration"
         >
           <SparklesText
-            text="Open Album"
+            text="Tap to Start"
             as="span"
             className="text-lg font-semibold text-white"
             sparkleCount={6}

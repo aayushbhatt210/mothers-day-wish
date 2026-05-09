@@ -28,7 +28,6 @@ function Photo({ src, alt, className }: { src: string; alt: string; className: s
         <img
           src={`/assets/photos/${src}`}
           alt={alt}
-          loading="lazy"
           onLoad={(e) => {
             const img = e.currentTarget;
             if (img.naturalWidth > img.naturalHeight) {
@@ -57,7 +56,7 @@ export const BookPage = forwardRef<HTMLDivElement, BookPageProps>(function BookP
   return (
     <div
       ref={ref}
-      className={`relative h-full w-full overflow-hidden border border-[#e8d4b8]/60 bg-[#fffaf8] shadow-[0_8px_24px_rgba(0,0,0,0.12)] ${
+      className={`relative h-full w-full overflow-hidden border border-[#e8d4b8]/60 bg-[#fffaf8] shadow-[0_8px_24px_rgba(0,0,0,0.12)] will-change-transform ${
         isFullMedia || isMessagePage ? "p-3 md:p-6" : "p-4 md:p-6"
       }`}
     >
