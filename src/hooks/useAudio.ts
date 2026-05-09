@@ -87,19 +87,27 @@ export function useAudio() {
   }, [background, effects, voiceNotes]);
 
   const startBackground = useCallback(() => {
-    const state = background.state();
-    const isPlaying = background.playing();
-    
-    console.log(`Audio: startBackground called. State: ${state}, Playing: ${isPlaying}`);
+    // If already playing, do absolutely nothing to prevent double audio
+    if (background.playing()) {
+      console.log("Audio: Background music is already playing. Skipping start command.");
+      return;
+    }
 
-    if (state === "loaded" && !isPlaying) {
+    const state = background.state();
+    console.log(`Audio: startBackground called. State: ${state}`);
+
+    if (state === "loaded") {
       background.play();
     } else if (state === "unloaded") {
       background.load();
-      background.once("load", () => background.play());
-    } else if (!isPlaying) {
-      // If it's loading or already trying to play, just trigger play again to be safe
-      background.play();
+      background.once("load", () => {
+        if (!background.playing()) background.play();
+      });
+    } else {
+      // Loading state - wait for load to play
+      background.once("load", () => {
+        if (!background.playing()) background.play();
+      });
     }
     
     initializedRef.current = true;
