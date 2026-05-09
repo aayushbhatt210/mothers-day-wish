@@ -13,6 +13,19 @@ function App() {
   const [step, setStep] = useState<Step>("landing");
   const audio = useAudio();
 
+  useEffect(() => {
+    // Try to start immediately (may be blocked by browser)
+    audio.startBackground();
+
+    // Start on first interaction to bypass browser autoplay restrictions
+    const handleInteraction = () => {
+      audio.startBackground();
+      window.removeEventListener("click", handleInteraction);
+    };
+    window.addEventListener("click", handleInteraction);
+    return () => window.removeEventListener("click", handleInteraction);
+  }, [audio]);
+
   const renderStep = () => {
     switch (step) {
       case "landing":
