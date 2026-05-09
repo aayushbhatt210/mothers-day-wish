@@ -8,13 +8,13 @@ type BookCoverProps = {
 };
 
 export const BookCover = forwardRef<HTMLDivElement, BookCoverProps>(function BookCover(
-  { title, subtitle, back = false },
+  { title, subtitle, back = false, ...rest },
   ref
 ) {
   return (
     <div
       ref={ref}
-      data-density="hard"
+      {...rest}
       className={`relative flex h-full w-full flex-col justify-center overflow-hidden border border-dark-rose/20 bg-gradient-to-br from-[#f7bfd0] via-[#f4a6c1] to-[#c85a7c] px-8 text-white shadow-[0_18px_30px_rgba(200,90,124,0.35)] ${
         back ? "rounded-l-md" : "rounded-r-md"
       }`}

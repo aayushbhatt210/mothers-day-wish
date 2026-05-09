@@ -91,7 +91,7 @@ export function RealBookAlbum({ data, onReachedEnd, onPageTurn }: RealBookAlbumP
             ref={flipRef}
             className="mx-auto"
             startPage={0}
-            flippingTime={1000}
+            flippingTime={800}
             useMouseEvents={true}
             disableFlipByClick={false}
             showPageCorners={true}
@@ -104,19 +104,20 @@ export function RealBookAlbum({ data, onReachedEnd, onPageTurn }: RealBookAlbumP
             }}
           >
             {[
-              <BookCover key="front-cover" title={data.title} subtitle={data.subtitle} />,
+              <BookCover key="front-cover" title={data.title} subtitle={data.subtitle} data-density="soft" />,
               ...data.pages.map((page, idx) => (
                 <BookPage
                   key={page.pageNumber}
                   page={{ ...page, pageNumber: idx + 1 }}
                   side={(idx + 1) % 2 === 0 ? "left" : "right"}
                   onAction={onReachedEnd}
+                  data-density="soft"
                 />
               )),
               needsFiller ? (
-                <div key="filler-page" className="h-full w-full bg-[#fffaf8]" />
+                <div key="filler-page" className="h-full w-full bg-[#fffaf8]" data-density="soft" />
               ) : null,
-              <BookCover key="back-cover" title={data.title} subtitle={data.subtitle} back />
+              <BookCover key="back-cover" title={data.title} subtitle={data.subtitle} back data-density="soft" />
             ].filter(Boolean)}
           </PageFlip>
         </div>
