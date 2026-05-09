@@ -22,6 +22,7 @@ type FlipBookRef = {
 };
 
 export function RealBookAlbum({ data, onReachedEnd, onPageTurn }: RealBookAlbumProps) {
+  const PageFlip = HTMLFlipBook as any;
   const [activePage, setActivePage] = useState(0);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
   const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth);
@@ -67,7 +68,7 @@ export function RealBookAlbum({ data, onReachedEnd, onPageTurn }: RealBookAlbumP
       >
         <div className="pointer-events-none absolute left-1/2 top-6 hidden h-[78%] w-5 -translate-x-1/2 rounded-full bg-gradient-to-b from-[#c85a7c] to-[#f4a6c1] opacity-80 blur-[1px] md:block" />
         <div className="relative overflow-hidden rounded-lg bg-light-cream/50 shadow-inner">
-          <HTMLFlipBook
+          <PageFlip
             width={baseWidth}
             height={baseHeight}
             size={isMobile ? "fixed" : "stretch"}
@@ -86,7 +87,7 @@ export function RealBookAlbum({ data, onReachedEnd, onPageTurn }: RealBookAlbumP
             disableFlipByClick={false}
             showPageCorners
             drawShadow
-            onFlip={(event) => {
+            onFlip={(event: any) => {
               const nextPage = event.data;
               setActivePage(nextPage);
               onPageTurn();
@@ -108,7 +109,7 @@ export function RealBookAlbum({ data, onReachedEnd, onPageTurn }: RealBookAlbumP
               ) : null,
               <BookCover key="back-cover" title={data.title} subtitle={data.subtitle} back />
             ].filter(Boolean)}
-          </HTMLFlipBook>
+          </PageFlip>
         </div>
       </div>
 
